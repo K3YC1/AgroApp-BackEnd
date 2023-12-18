@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.agroapp.models.Usuario;
 import com.agroapp.services.UsuarioService;
 
 @RestController
@@ -25,25 +26,40 @@ public class RegistrarController {
                                           @RequestParam("contraseña")String contraseña){
 
         if(nombreUsuario.isEmpty() || correo.isEmpty() || contraseña.isEmpty()){
-            return new ResponseEntity<>("Porfavor complete los datos!", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Porfavor complete los datos!", HttpStatus.NOT_FOUND);
+        }
+        
+     // Verificar que el correo tenga "@gmail.com" al final
+        if (!correo.toLowerCase().endsWith("@gmail.com")) {
+            return new ResponseEntity<>("Porfavor introduzca un correo valido!", HttpStatus.BAD_REQUEST);
         }
         
      // Check if the email is already registered
         if (usuarioService.isUserAlreadyRegistered(correo)) {
-            return new ResponseEntity<>("El correo ya está registrado. Por favor, use otro correo.", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("El correo ya está registrado. Por favor, use otro correo.", HttpStatus.FORBIDDEN);
         }
 
         // Encrypt / Hash  Password:
         String hashed_password = BCrypt.hashpw(contraseña, BCrypt.gensalt());
 
-        // Register New User:
-        int result = usuarioService.registerNewUserServiceMethod(nombreUsuario, correo, hashed_password);
+     // Crear el usuario sin confirmar y enviar el código de verificación
+        Usuario nuevoUsuario = new Usuario();
+        nuevoUsuario.setNombreUsuario(nombreUsuario);
+        nuevoUsuario.setCorreo(correo);
+        nuevoUsuario.setContraseña(hashed_password);
 
-        if(result != 1){
-            return new ResponseEntity<>("El registro de Usuario Fallo!", HttpStatus.BAD_REQUEST);
+        usuarioService.enviarCodigoVerificacion(nuevoUsuario);
+
+        return new ResponseEntity<>("Se ha enviado un código de verificación. Por favor, ingrese el código para confirmar su registro.",
+                HttpStatus.OK);
+    }
+    
+    @PostMapping("/usuario/confirmar")
+    public ResponseEntity confirmUser(@RequestParam("codigo") String codigo) {
+        if (usuarioService.confirmarUsuarioConCodigo(codigo)) {
+            return new ResponseEntity<>("¡Registro confirmado con éxito!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("El código de verificación no es válido o ha expirado.", HttpStatus.BAD_REQUEST);
         }
-
-        return new ResponseEntity<>("El registro de Usuario fue Exitoso!", HttpStatus.OK);
-
     }
 }

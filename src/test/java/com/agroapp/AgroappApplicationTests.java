@@ -9,5 +9,4 @@ class AgroappApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

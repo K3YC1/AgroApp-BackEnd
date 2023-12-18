@@ -1,6 +1,8 @@
 package com.agroapp.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -30,6 +32,12 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Integer> {
     int registerNewUser(@Param("nombreUsuario") String nombreUsuario,
                         @Param("correo") String correo,
                         @Param("contraseña") String contraseña);
+    
+    
+    Optional<Usuario> findByCodigoVerificacion(String codigoVerificacion);
+    
+    @Query("SELECT u FROM Usuario u WHERE u.confirmado = false AND u.expiracionCodigo < :fechaActual")
+    List<Usuario> findByConfirmadoFalseAndExpiracionCodigoBefore(@Param("fechaActual") LocalDateTime fechaActual);
 
-
+    Optional<Usuario> findByCorreo(String correo);
 }

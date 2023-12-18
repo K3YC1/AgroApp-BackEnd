@@ -1,18 +1,19 @@
 package com.agroapp.models;
 
-import java.util.Date;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
 
     @Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_usuario;
     
     private String nombreUsuario;
@@ -21,10 +22,19 @@ public class Usuario {
     
     private String contraseña;
     
-    private Date creado_en;
+    private LocalDateTime creado_en;
     
-    @Transient
-    private Date actualizado_en;
+    private LocalDateTime actualizado_en;
+    
+    private String codigoVerificacion;
+    
+    private LocalDateTime expiracionCodigo;
+
+	private LocalDateTime expiracionCodigoRecuperacion;
+
+	private boolean confirmado;
+
+	private String imagen_perfil;
 
 	public int getId_usuario() {
 		return id_usuario;
@@ -58,20 +68,61 @@ public class Usuario {
 		this.contraseña = contraseña;
 	}
 
-	public Date getCreado_en() {
+	public LocalDateTime getCreado_en() {
 		return creado_en;
 	}
 
-	public void setCreado_en(Date creado_en) {
-		this.creado_en = creado_en;
+	public void setCreado_en(LocalDateTime localDateTime) {
+		this.creado_en = localDateTime;
 	}
 
-	public Date getActualizado_en() {
+	public LocalDateTime getActualizado_en() {
 		return actualizado_en;
 	}
 
-	public void setActualizado_en(Date actualizado_en) {
+	public void setActualizado_en(LocalDateTime actualizado_en) {
 		this.actualizado_en = actualizado_en;
 	}
+
+	public String getCodigoVerificacion() {
+		return codigoVerificacion;
+	}
+
+	public void setCodigoVerificacion(String codigoVerificacion) {
+		this.codigoVerificacion = codigoVerificacion;
+	}
+
+	public LocalDateTime getExpiracionCodigo() {
+		return expiracionCodigo;
+	}
+
+	public void setExpiracionCodigo(LocalDateTime expiracionCodigo) {
+		this.expiracionCodigo = expiracionCodigo;
+	}
+
+	public LocalDateTime getExpiracionCodigoRecuperacion() {
+		return expiracionCodigoRecuperacion;
+	}
+
+	public void setExpiracionCodigoRecuperacion(LocalDateTime expiracionCodigoRecuperacion) {
+		this.expiracionCodigoRecuperacion = expiracionCodigoRecuperacion;
+	}
+
+	public boolean isConfirmado() {
+		return confirmado;
+	}
+
+	public void setConfirmado(boolean confirmado) {
+		this.confirmado = confirmado;
+	}
+
+	public String getImagen_perfil() {
+		return imagen_perfil;
+	}
+
+	public void setImagen_perfil(String imagen_perfil) {
+		this.imagen_perfil = imagen_perfil;
+	}
+    
 }
 
